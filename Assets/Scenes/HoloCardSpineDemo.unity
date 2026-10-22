@@ -454,6 +454,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HoloCard_PopOut
       objectReference: {fileID: 0}
+    - target: {fileID: 5279116437022203763, guid: 1429309ef67159e45bdc7b09433ae8f7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6155090360790977630, guid: 1429309ef67159e45bdc7b09433ae8f7, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
@@ -631,10 +635,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1786893420507732646, guid: 2576228861cd0904f9826327480c3657, type: 3}
+      propertyPath: skeletonDataAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 1e48915524574ab387375710ca5c3b38, type: 2}
     - target: {fileID: 1823342093228906728, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1905816784026989313, guid: 2576228861cd0904f9826327480c3657, type: 3}
+      propertyPath: character
+      value: 
+      objectReference: {fileID: 2800000, guid: 14e1f1a52a814bc6914372b593b4f4e1, type: 3}
     - target: {fileID: 2721786527199676296, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -694,23 +706,31 @@ PrefabInstance:
     - target: {fileID: 4910549439987904976, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 73b9b2b98afb4a848b9bb8e3f8f36ea5, type: 2}
+      objectReference: {fileID: 2100000, guid: cee12f8bac993ee429e2b0fd65cee916, type: 2}
     - target: {fileID: 4910549439987904976, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 8ad7d403badbece4b96059aec0ec01ee, type: 2}
+      objectReference: {fileID: 2100000, guid: 45c6a5973852a924dac919b8820a64c9, type: 2}
     - target: {fileID: 5718292061445726791, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: m_Name
       value: HoloCard_Spine
       objectReference: {fileID: 0}
     - target: {fileID: 5718292061445726791, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5778879157472133048, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7506448241191120187, guid: 2576228861cd0904f9826327480c3657, type: 3}
+      propertyPath: insideMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: cee12f8bac993ee429e2b0fd65cee916, type: 2}
+    - target: {fileID: 7506448241191120187, guid: 2576228861cd0904f9826327480c3657, type: 3}
+      propertyPath: popOutMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 45c6a5973852a924dac919b8820a64c9, type: 2}
     - target: {fileID: 8207709183239043425, guid: 2576228861cd0904f9826327480c3657, type: 3}
       propertyPath: m_Mesh
       value: 

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/HoloLenticularDemo.unity
+    guid: 5c53bae88ff518449a319e416e73d037
+  - enabled: 1
     path: Assets/Scenes/HoloEffectsShowcase.unity
     guid: 465a52e39ebeb7343851ffb3e0d4970f
   - enabled: 1

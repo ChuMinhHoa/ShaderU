@@ -18,7 +18,7 @@ Shader "SharderUltimate/HoloCard"
         _BackHolo ("Back Holo Strength", Range(0, 1.5)) = 0.6
 
         [Header(Effect)]
-        [Enum(Rainbow, 0, Crystal, 1, Metal, 2, Ice, 3, ThinFilm, 4, Glitter, 5, Hologram, 6)] _Effect ("Holo Effect", Float) = 0
+        [Enum(HoloCardEffect)] _Effect ("Holo Effect (enum HoloCardEffect.cs)", Float) = 0
 
         [Header(Crystal effect)]
         _FacetHueSpread ("Hue Spread Per Facet", Range(0, 4)) = 1.5
@@ -91,6 +91,25 @@ Shader "SharderUltimate/HoloCard"
         _RgbSplit ("RGB Split (uv)", Range(0, 0.03)) = 0.002
         _QuadRect ("Quad Rect On Card (uv x, y, w, h), poster đặt riêng", Vector) = (0, 0, 1, 1)
 
+        [Header(Lenticular effect)]
+        [NoScaleOffset] _LentTex1 ("Frame 1 (Front là frame 0, alpha luôn lấy từ Front)", 2D) = "black" {}
+        [NoScaleOffset] _LentTex2 ("Frame 2", 2D) = "black" {}
+        [NoScaleOffset] _LentTex3 ("Frame 3", 2D) = "black" {}
+        [IntRange] _LentFrames ("Frame Count", Range(2, 4)) = 2
+        [Enum(Vertical Lenses Tilt Left Right, 0, Horizontal Lenses Tilt Up Down, 1)] _LentAxis ("Lens Direction", Float) = 0
+        _LentFront ("Front View Frame (khung lúc nhìn thẳng, 0 = Front)", Range(0, 3)) = 0
+        _LentTilt ("Frames Per Tilt (âm = đảo chiều, 5 = đổi 1 khung mỗi ~11 độ)", Range(-12, 12)) = 5
+        _LentPerspective ("Per Pixel View (0 cả thẻ đổi cùng lúc, 1 quét theo phối cảnh)", Range(0, 1)) = 0.3
+        _LentSwitch ("Switch Softness", Range(0.01, 0.5)) = 0.12
+        _LentStripe ("Transition Stripes", Range(0, 1)) = 0.35
+        _LentGhost ("Ghosting (khung kế bên lẫn vào)", Range(0, 0.4)) = 0.06
+        _LentLenses ("Lenses Per Card Width", Range(10, 300)) = 110
+        _LentBulge ("Lens Curvature", Range(0.05, 1.5)) = 0.6
+        _LentSheen ("Lens Sheen (HDR)", Range(0, 4)) = 0.35
+        _LentSharp ("Sheen Sharpness", Range(4, 400)) = 120
+        _LentGroove ("Groove Darkness", Range(0, 1)) = 0.25
+        _LentHolo ("Holo Color Amount", Range(0, 1)) = 0.1
+
         [Header(Light)]
         _Glare ("Glare", Range(0, 3)) = 0.8
         _EdgeGlow ("Edge Glow (HDR)", Range(0, 6)) = 2.5
@@ -129,6 +148,10 @@ Shader "SharderUltimate/HoloCard"
             TEXTURE2D(_HoloMask);   SAMPLER(sampler_HoloMask);
             TEXTURE2D(_HoloTex);    SAMPLER(sampler_HoloTex);
             TEXTURE2D(_PatternTex); SAMPLER(sampler_PatternTex);
+            // Các khung lenticular dùng chung sampler của _MainTex
+            TEXTURE2D(_LentTex1);
+            TEXTURE2D(_LentTex2);
+            TEXTURE2D(_LentTex3);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _HoloTex_ST;
@@ -148,6 +171,8 @@ Shader "SharderUltimate/HoloCard"
                 half _HoloTintAmount, _ScanDensity, _ScanStrength, _ScanSpeed, _ScanBand, _ScanBandSpeed, _ScanBandWidth;
                 half _HexGrid, _HexScale, _Flicker, _Glitch, _GlitchRate, _RgbSplit;
                 float4 _QuadRect;
+                half _LentFrames, _LentAxis, _LentFront, _LentTilt, _LentPerspective, _LentSwitch, _LentStripe, _LentGhost;
+                half _LentLenses, _LentBulge, _LentSheen, _LentSharp, _LentGroove, _LentHolo;
                 half _Glare, _EdgeGlow, _EdgeWidth, _Corner, _Aspect;
                 float4 _CardSize, _WindowCenter, _WindowShape, _WindowPoly;
                 half _RingWidth;
@@ -288,6 +313,9 @@ Shader "SharderUltimate/HoloCard"
 
                 // Hướng nhìn trong tangent space = "View Direction" node, dùng để trượt texture
                 float2 viewTS = float2(dot(V, T), dot(V, B));
+                float3 L = normalize(float3(-0.4, 0.6, -0.7));     // đèn của vệt sáng phản chiếu
+                bool hologram = abs(_Effect - 6.0) < 0.5;
+                bool lenticular = _Effect > 6.5;
 
                 // Hologram: tính glitch trước khi lấy mẫu ảnh. Dải glitch / scanline tính theo toạ độ trên cả thẻ
                 // (_QuadRect) để poster nổi phía trước khớp dải với mặt thẻ
@@ -295,7 +323,7 @@ Shader "SharderUltimate/HoloCard"
                 float2 glitchShift = 0;
                 float rgbSplit = 0;
                 half glitch = 0, glitchBar = 0;
-                if (_Effect > 5.5)
+                if (hologram)
                 {
                     float slot = fmod(floor(_Time.y * 10.0), 4096.0);   // 10 lát thời gian mỗi giây, mỗi lát có thể glitch
                     half burst = step(1.0 - _GlitchRate * 0.1, Hash(float2(slot, 3.7)));
@@ -309,13 +337,46 @@ Shader "SharderUltimate/HoloCard"
                     rgbSplit = (_RgbSplit + glitch * 0.012) / _QuadRect.z;
                 }
 
+                // Lenticular: tấm nhựa gồm các thấu kính trụ song song, dưới mỗi thấu kính in xen kẽ các khung.
+                // Góc nhìn ngang qua thấu kính quyết định khung nào hiện (trọng số lentW của 4 khung)
+                float4 lentW = 0;
+                float lensL = 0.5;      // vị trí trong một thấu kính, 0..1 theo chiều cắt ngang
+                half lensAA = 0;        // 1 = thấu kính đủ to trên màn hình để vẽ gân, 0 = quá nhỏ (tránh moire)
+                if (lenticular)
+                {
+                    float across = _LentAxis > 0.5 ? cardRectUV.y * _CardSize.y : cardRectUV.x * _CardSize.x;
+                    float lens = across * _LentLenses / _CardSize.x;
+                    lensL = frac(lens);
+                    lensAA = saturate(2.0 - fwidth(lens) * 3.0);
+
+                    // Góc nhìn tới tâm thẻ: cả thẻ đổi khung cùng lúc. Trộn thêm góc nhìn từng điểm ảnh thì lúc
+                    // chuyển khung có vệt quét ngang thẻ như thẻ thật soi gần (phối cảnh)
+                    float3 Vc = normalize(GetWorldSpaceViewDir(TransformObjectToWorld(float3(0, 0, 0))));
+                    float2 view = lerp(float2(dot(Vc, T), dot(Vc, B)), viewTS, _LentPerspective);
+                    // p = chỉ số khung (liên tục): khung k hiện trọn ở p = k, chuyển sang khung kế ở p = k + 0.5
+                    float p = _LentFront + (_LentAxis > 0.5 ? view.y : view.x) * _LentTilt;
+                    float i0 = clamp(floor(p), 0.0, _LentFrames - 2.0);
+                    // Lệch pha theo vị trí trong thấu kính: lúc chuyển, khung mới hiện ra thành các sọc mảnh trước
+                    float f = p - i0 + (lensL - 0.5) * _LentStripe * lensAA;
+                    half b = smoothstep(0.5 - _LentSwitch, 0.5 + _LentSwitch, f);
+                    float4 w0 = step(abs(float4(0, 1, 2, 3) - i0), 0.5);
+                    float4 w1 = step(abs(float4(0, 1, 2, 3) - i0 - 1.0), 0.5);
+                    lentW = lerp(w0, w1, b);
+                    lentW = lerp(lentW, b > 0.5 ? w0 : w1, _LentGhost);      // bóng mờ của khung kế bên
+                }
+
                 half4 baseTex;
                 half mask;
                 half holoAmount;
                 if (isFront)
                 {
                     baseTex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-                    if (_Effect > 5.5) baseTex.rgb = SAMPLE_SPLIT(_MainTex, sampler_MainTex, uv + glitchShift, rgbSplit);
+                    if (hologram) baseTex.rgb = SAMPLE_SPLIT(_MainTex, sampler_MainTex, uv + glitchShift, rgbSplit);
+                    if (lenticular)
+                        baseTex.rgb = baseTex.rgb * lentW.x
+                                    + SAMPLE_TEXTURE2D(_LentTex1, sampler_MainTex, uv).rgb * lentW.y
+                                    + SAMPLE_TEXTURE2D(_LentTex2, sampler_MainTex, uv).rgb * lentW.z
+                                    + SAMPLE_TEXTURE2D(_LentTex3, sampler_MainTex, uv).rgb * lentW.w;
                     mask = SAMPLE_TEXTURE2D(_HoloMask, sampler_HoloMask, uv).r;
                     holoAmount = _HoloStrength;
 
@@ -338,7 +399,7 @@ Shader "SharderUltimate/HoloCard"
                 {
                     uv.x = 1.0 - uv.x;
                     baseTex = SAMPLE_TEXTURE2D(_BackTex, sampler_BackTex, uv);
-                    if (_Effect > 5.5) baseTex.rgb = SAMPLE_SPLIT(_BackTex, sampler_BackTex, uv + glitchShift, rgbSplit);
+                    if (hologram) baseTex.rgb = SAMPLE_SPLIT(_BackTex, sampler_BackTex, uv + glitchShift, rgbSplit);
                     mask = 1.0;
                     holoAmount = _BackHolo;
                 }
@@ -359,7 +420,30 @@ Shader "SharderUltimate/HoloCard"
                 half holoMix = 1.0;     // mức trộn lớp holo màu vào ảnh (hiệu ứng nào cần nhẹ hơn thì giảm)
                 half shade = 1.0;       // nhân sáng/tối sau khi trộn (scanline, nhấp nháy)
                 half holoVis = saturate(mask * holoAmount);
-                if (_Effect > 5.5)
+                if (lenticular)
+                {
+                    holo *= lerp(0.55, 1.35, facet);
+                    if (isFront)
+                    {
+                        // Mỗi thấu kính trụ chỉ cong theo chiều cắt ngang: vệt sáng mảnh chạy dọc từng gân, trượt qua
+                        // gân khi nghiêng thẻ và tắt khi đèn lệch theo trục thấu kính. Rãnh giữa 2 gân tối hơn
+                        float3 acrossDir = _LentAxis > 0.5 ? B : T;
+                        float3 alongDir = _LentAxis > 0.5 ? T : B;
+                        float3 H = normalize(L + V);
+                        float slope = (lensL - 0.5) * 2.0 * _LentBulge;
+                        half sheen = pow(saturate(dot(normalize(N + acrossDir * slope), H)), _LentSharp);
+                        // Thấu kính nhỏ dưới ~2 px: thay bằng độ sáng trung bình của vệt trên một thấu kính
+                        float ha = dot(H, alongDir), hn = max(dot(H, N), 1e-3);
+                        half reach = 1.0 - smoothstep(0.8, 1.0, abs(dot(H, acrossDir) / hn) / _LentBulge);
+                        half sheenAvg = sqrt(1.5708 / _LentSharp) / _LentBulge * pow(saturate(1.0 - ha * ha), _LentSharp * 0.5) * reach;
+                        sheen = lerp(saturate(sheenAvg), sheen, lensAA);
+                        half groove = 1.0 - smoothstep(0.0, 0.15, min(lensL, 1.0 - lensL));
+                        holoMix = _LentHolo;
+                        shade = 1.0 - groove * _LentGroove * lensAA;
+                        crystalAdd = sheen * _LentSheen;
+                    }
+                }
+                else if (hologram)
                 {
                     // Hologram: ảnh chiếu sci-fi. Ám màu, scanline cuộn, dải quét sáng chạy từ trên xuống,
                     // lưới lục giác hiện rõ khi dải quét đi qua, nhấp nháy và glitch xé dòng (tính ở trên)
@@ -512,7 +596,6 @@ Shader "SharderUltimate/HoloCard"
                 col += holo * edge * _EdgeGlow * step(0.001, holoAmount);
 
                 // Vệt sáng phản chiếu
-                float3 L = normalize(float3(-0.4, 0.6, -0.7));
                 half spec = pow(saturate(dot(reflect(-V, N), L)), 20.0) * _Glare;
                 col += spec;
 

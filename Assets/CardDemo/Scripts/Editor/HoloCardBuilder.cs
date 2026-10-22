@@ -24,6 +24,10 @@ public static class HoloCardBuilder
     static readonly string[] ShowcasePrefabs = { "HoloCard_ThinFilm", "HoloCard_Glitter", "HoloCard_Hologram" };
     // Hiệu ứng mặt thẻ -> có material poster riêng không (Hologram ám cả 2 tấm poster)
     static readonly (string effect, bool posters)[] SpineEffects = { ("ThinFilm", false), ("Glitter", false), ("Hologram", true) };
+    const string LenticularPrefabPath = Root + "/Prefabs/HoloCard_Lenticular.prefab";
+    const string LenticularScenePath = "Assets/Scenes/HoloLenticularDemo.unity";
+    // Khung 0 là _MainTex, các khung sau vào _LentTex1.._LentTex3 (tối đa 4)
+    static readonly string[] LenticularFrames = { "lenticular_0", "lenticular_1" };
 
     // Layout poster phải khớp với texture holo_front.png (720x1008)
     const float CardW = HoloCardView.Width, CardH = HoloCardView.Height;
@@ -280,6 +284,69 @@ public static class HoloCardBuilder
         Debug.Log("[CardDemo] Built " + ShowcaseScenePath + " (mở scene này rồi Play để xem)");
     }
 
+    /// Thẻ lenticular (hiệu ứng Lenticular của HoloCard): nhìn thẳng là lenticular_0 (cô gái trên sân thượng Santorini),
+    /// nghiêng sang một bên thì đổi sang lenticular_1 (sân thượng trống). Thẻ trơn không cửa sổ portal nên không có HoloCardView.
+    /// Dựng ở scene phụ rồi đóng lại; không gọi SaveAssets để khỏi ghi xuống đĩa material đang sửa dở
+    [MenuItem("Tools/Card Demo/Build Lenticular Card")]
+    public static void BuildLenticularCard()
+    {
+        var background = AssetDatabase.LoadAssetAtPath<Material>(Root + "/Materials/Holo_Background.mat");
+        var shadowMat = AssetDatabase.LoadAssetAtPath<Material>(Root + "/Materials/Holo_CardShadow.mat");
+        if (background == null || shadowMat == null)
+        {
+            Debug.LogError("[CardDemo] Thiếu Holo_Background / Holo_CardShadow, chạy Build Holo Card Scene trước");
+            return;
+        }
+        foreach (var f in LenticularFrames) SetupTexture(HTex + f + ".png", false);
+
+        var faceMat = new Material(Shader.Find("SharderUltimate/HoloCard"));
+        faceMat.SetTexture("_MainTex", Load(HTex + LenticularFrames[0] + ".png"));
+        for (int i = 1; i < LenticularFrames.Length; i++)
+            faceMat.SetTexture("_LentTex" + i, Load(HTex + LenticularFrames[i] + ".png"));
+        faceMat.SetFloat("_LentFrames", LenticularFrames.Length);
+        faceMat.SetFloat("_Effect", (float)HoloCardEffect.Lenticular);
+        faceMat.SetTexture("_BackTex", Load(HTex + "holo_back.png"));
+        faceMat.SetTexture("_HoloTex", Load(HTex + "holo_color.png"));
+        faceMat.SetTextureScale("_HoloTex", new Vector2(1.2f, 1.2f));
+        faceMat.SetTexture("_PatternTex", Load(HTex + "facets.png"));
+        faceMat.SetFloat("_Aspect", CardW / CardH);
+        faceMat.SetFloat("_Corner", 60f / PxH);
+        faceMat.SetFloat("_BackHolo", 0.3f);
+        // Dựng lại: ghi đè vào material cũ. Xoá rồi tạo lại (SaveMaterial, cùng GUID) thì Face của prefab dựng lại
+        // vẫn trỏ vào material đã xoá cho tới khi reimport prefab, mặt thẻ thành màu hồng
+        const string matName = "Holo_Face_Lenticular";
+        var existing = AssetDatabase.LoadAssetAtPath<Material>(Root + "/Materials/" + matName + ".mat");
+        if (existing != null)
+        {
+            faceMat.name = matName;     // CopySerialized chép cả tên
+            EditorUtility.CopySerialized(faceMat, existing);
+            EditorUtility.SetDirty(existing);
+            AssetDatabase.SaveAssetIfDirty(existing);
+            faceMat = existing;
+        }
+        else SaveMaterial(faceMat, matName);
+
+        var previous = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
+        CreateEnvironment(background, AssetDatabase.LoadAssetAtPath<VolumeProfile>(VolumePath));
+
+        var root = new GameObject("HoloCard_Lenticular");
+        root.AddComponent<BoxCollider>().size = new Vector3(CardW, CardH, 0.1f);
+        var pivot = new GameObject("Pivot").transform;
+        pivot.SetParent(root.transform, false);
+        CreateQuad("Face", pivot, faceMat).localScale = new Vector3(CardW, CardH, 1f);
+        AddShadowAndTilt(root, pivot, shadowMat);
+
+        if (!AssetDatabase.IsValidFolder(Root + "/Prefabs")) AssetDatabase.CreateFolder(Root, "Prefabs");
+        PrefabUtility.SaveAsPrefabAssetAndConnect(root, LenticularPrefabPath, InteractionMode.AutomatedAction);
+        EditorSceneManager.SaveScene(scene, LenticularScenePath);
+        AddToBuildSettings(LenticularScenePath);
+        if (previous.IsValid()) UnityEngine.SceneManagement.SceneManager.SetActiveScene(previous);
+        EditorSceneManager.CloseScene(scene, true);
+        Debug.Log("[CardDemo] Built " + LenticularPrefabPath + " + " + LenticularScenePath + " (mở scene này rồi Play để xem)");
+    }
+
     /// Chép material nhân vật có sẵn (giữ màu, queue, pass đã tắt) rồi đổi texture
     static Material CopyCharacterMaterial(string source, string name, Texture2D tex)
     {
@@ -351,6 +418,17 @@ public static class HoloCardBuilder
         shadowMat.SetTexture("_MainTex", Load(Tex + "shadow.png"));
         shadowMat.SetColor("_Color", new Color(0f, 0f, 0f, 0.8f));
         SaveMaterial(shadowMat, "Holo_CardShadow");
+        AddShadowAndTilt(root, pivot, shadowMat);
+
+        view.character = Load(HTex + "cat_astronaut.png");
+        view.spaceTexture = Load(HTex + "space_bg.png");
+        view.Rebuild();
+        return root;
+    }
+
+    /// Bóng mềm dưới thẻ + CardTilt3D (nghiêng theo chuột, bấm để lật) cho thẻ có mặt thẻ nằm dưới Pivot
+    static void AddShadowAndTilt(GameObject root, Transform pivot, Material shadowMat)
+    {
         var shadowPivot = new GameObject("ShadowPivot").transform;
         shadowPivot.SetParent(root.transform, false);
         shadowPivot.localPosition = new Vector3(0.15f, -0.2f, 0.8f);
@@ -364,11 +442,6 @@ public static class HoloCardBuilder
         tilt.idleTilt = 12f;
         tilt.hoverLift = 0.4f;
         tilt.hoverScale = 1.04f;
-
-        view.character = Load(HTex + "cat_astronaut.png");
-        view.spaceTexture = Load(HTex + "space_bg.png");
-        view.Rebuild();
-        return root;
     }
 
     static void CreatePoster(Transform parent, string name, string tex, Rect px, float z)
