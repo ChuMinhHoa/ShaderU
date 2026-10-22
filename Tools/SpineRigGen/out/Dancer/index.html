@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Spine Preview</title>
+<script src="https://unpkg.com/@esotericsoftware/spine-player@~4.2.0/dist/iife/spine-player.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@esotericsoftware/spine-player@~4.2.0/dist/spine-player.css">
+<style>
+  html, body { margin: 0; background: #2b2f38; color: #ddd; font: 13px sans-serif; }
+  #player { width: 100%; height: calc(100vh - 40px); }
+  #bar { padding: 6px; }
+  button { margin-right: 6px; }
+</style>
+</head>
+<body>
+<div id="bar"><span id="buttons"></span><span id="log"></span></div>
+<div id="player"></div>
+<script>
+  // ?skel=<Name> loads <Name>.json / <Name>.atlas.txt next to this page (default Tiger)
+  var skel = new URLSearchParams(location.search).get('skel') || 'Tiger';
+  document.title = skel + ' Spine Preview';
+  var log = function (m) { document.getElementById('log').textContent = m; };
+  new spine.SpinePlayer("player", {
+    skeleton: skel + ".json",
+    atlas: skel + ".atlas.txt",
+    premultipliedAlpha: new URLSearchParams(location.search).get("pma") !== "0", // ?pma=0 for straight-alpha atlases
+    backgroundColor: "#2b2f38ff",
+    showControls: true,
+    viewport: { x: -300, y: -20, width: 600, height: 560, padLeft: 0, padRight: 0, padTop: 0, padBottom: 0 },
+    success: function (p) {
+      window.player = p;
+      p.animationState.addListener({ event: function (e, ev) { log('event: ' + ev.data.name + ' @' + e.trackTime.toFixed(2)); } });
+      var names = p.skeleton.data.animations.map(function (a) { return a.name; });
+      var first = names.indexOf("idle") >= 0 ? "idle" : names[0];
+      p.setAnimation(first, first === "idle");
+      var html = '';
+      names.forEach(function (n) {
+        html += '<button onclick="play(\'' + n + '\', ' + (n === 'idle') + ')">' + n + '</button>';
+        if (n !== 'idle' && names.indexOf('idle') >= 0) html += '<button onclick="thenIdle(\'' + n + '\')">' + n + ' → idle</button>';
+      });
+      document.getElementById('buttons').innerHTML = html;
+      log('loaded: ' + p.skeleton.data.animations.map(function (a) { return a.name + ' ' + a.duration.toFixed(2) + 's'; }).join(', '));
+    },
+    error: function (p, msg) { log('ERROR: ' + msg); }
+  });
+  function play(name, loop) { player.setAnimation(name, loop); player.play(); }
+  function thenIdle(name) {
+    player.animationState.setAnimation(0, name, false);
+    player.animationState.addAnimation(0, 'idle', true, 0);
+    player.play();
+  }
+</script>
+</body>
+</html>

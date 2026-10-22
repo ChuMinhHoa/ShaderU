@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CardElem_Water
+  m_Shader: {fileID: 4800000, guid: f6abbb9809f2422478c9ce5fc54439cf, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BackTex:
+        m_Texture: {fileID: 2800000, guid: 7a617de20d178814ca3e300041a80e55, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoilMask:
+        m_Texture: {fileID: 2800000, guid: 4aee03f64c74d38469bb5a3a380dd137, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FrontTex:
+        m_Texture: {fileID: 2800000, guid: 2184626a8ba55534a8e4999ab3ca12b1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 0.6667
+    - _Corner: 0.06
+    - _Element: 2
+    - _FoilScale: 3
+    - _FoilStrength: 0.3
+    - _FxIntensity: 1
+    - _FxSpeed: 1
+    - _Glare: 1
+    - _Hover: 0
+    - _Parallax: 0.025
+    - _Rim: 0.4
+    - _WaterLevel: 0.24
+    m_Colors: []
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

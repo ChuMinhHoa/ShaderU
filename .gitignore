@@ -1,0 +1,61 @@
+# ---- Unity: thư mục sinh tự động / bộ nhớ tạm ----
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Asset meta data should only be ignored when the corresponding asset is also ignored
+!/[Aa]ssets/**/*.meta
+
+# Plugin/cache sinh tự động
+/[Aa]ssets/Plugins/Editor/JetBrains*
+/[Aa]ssets/AssetStoreTools*
+/[Aa]ssets/StreamingAssets/aa*
+
+# ---- IDE ----
+.vs/
+.vscode/
+.idea/
+.gradle/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D generated meta files
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Crash reports
+sysinfo.txt
+crashlytics-build.properties
+
+# Build output
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Exe build ra từ tool
+/Tools/**/*.exe
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+Desktop.ini

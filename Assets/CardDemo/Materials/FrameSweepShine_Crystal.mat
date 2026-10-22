@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FrameSweepShine_Crystal
+  m_Shader: {fileID: 4800000, guid: 53f78d4535e09c646a3d0f5d8ce02e98, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - UNITY_UI_ALPHACLIP
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _LightTex:
+        m_Texture: {fileID: 2800000, guid: e758bc3130966bf4a92a8f05be2aa589, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 70db512026b179c4b9f4f446b08133a8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaCut: 0.45
+    - _Angle: 0
+    - _BandWidth: 150
+    - _ColorMask: 15
+    - _Duration: 1.7
+    - _Ease: 0.5
+    - _Glow: 0.6
+    - _GlowWidth: 110
+    - _InnerRadius: 88
+    - _Intensity: 0.19
+    - _Interval: 1
+    - _LightLength: 700
+    - _PanelShine: 0
+    - _PanelSoft: 1.5
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _TexResponse: 0.25
+    - _TimeOffset: 0
+    - _Tint: 0.6
+    - _UseUIAlphaClip: 1
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _InnerRect: {r: 30, g: 34, b: 359, a: 451}
+    - _LightTint: {r: 0.46666658, g: 1, b: 0.9921568, a: 1}
+    - _RefSize: {r: 390, g: 510, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

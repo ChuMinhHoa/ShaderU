@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Holo_Face_Glitter
+  m_Shader: {fileID: 4800000, guid: 9bab74d5a56024e47ab93df19ae37d16, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BackTex:
+        m_Texture: {fileID: 2800000, guid: a51249abdc0119749a43710361ee23db, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HoloMask:
+        m_Texture: {fileID: 2800000, guid: 9f09db3fac3945542903d13efff1a2f1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HoloTex:
+        m_Texture: {fileID: 2800000, guid: 9a56ac6321d597f438b3d4b3abafa8f9, type: 3}
+        m_Scale: {x: 1.2, y: 1.2}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: c215c21d4ad9bfd449fd4263e99855ba, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _PatternTex:
+        m_Texture: {fileID: 2800000, guid: dddf5d724098e2f4bbda5d80a2d8c648, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 0.71428573
+    - _BackHolo: 0.3
+    - _Corner: 0.05952381
+    - _Cull: 0
+    - _Distortion: 0.25
+    - _Effect: 5
+    - _FacetHoloMix: 0.2
+    - _GlitterDensity: 55
+    - _GlitterSize: 0.35
+    - _GlitterTilt: 3.5
+    - _GlitterWindow: 0.05
+    - _GlitterBright: 6
+    - _GlitterRainbow: 0.6
+    - _GlitterGrain: 0.12
+    - _GlitterStar: 4
+    - _GlitterStarDensity: 7
+    - _GlitterCursor: 1.5
+    - _GlitterBase: 0.35
+    - _EdgeGlow: 2.5
+    - _EdgeWidth: 0.025
+    - _Glare: 0.8
+    - _HoloStrength: 1
+    - _NoiseScale: 4
+    - _OffsetAmount: 0.6
+    - _PatternOffset: 0.15
+    - _RingWidth: 0.056
+    m_Colors:
+    - _GlitterColor: {r: 1, g: 0.93, b: 0.8, a: 1}
+    - _CardSize: {r: 2.5, g: 3.5, b: 0, a: 0}
+    - _RingColor: {r: 1, g: 0.85, b: 0.5, a: 1}
+    - _ScrollSpeed: {r: 0.02, g: 0.01, b: 0, a: 0}
+    - _WindowCenter: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _WindowPoly: {r: 6, g: 0, b: 0, a: 0}
+    - _WindowShape: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Spine Capture</title>
+<script src="https://unpkg.com/@esotericsoftware/spine-player@~4.2.0/dist/iife/spine-player.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@esotericsoftware/spine-player@~4.2.0/dist/spine-player.css">
+<style>
+  html, body { margin: 0; background: #2b2f38; color: #ddd; font: 12px sans-serif; }
+  #player { width: 400px; height: 400px; }
+  body.big #player { width: 800px; height: 800px; }
+</style>
+</head>
+<body>
+<div id="player"></div>
+<div id="log"></div>
+<script>
+  var q = new URLSearchParams(location.search);
+  // ?skel=<Name> picks <Name>.json / <Name>.atlas.txt (default Tiger); ?vx=&vy=&vw=&vh= sets a custom viewport
+  var skel = q.get('skel') || 'Tiger';
+  document.title = skel + ' Capture';
+  var vp = q.get('vw') ? { x: +q.get('vx'), y: +q.get('vy'), width: +q.get('vw'), height: +q.get('vh') }
+    : q.get('vp') === 'zoom2' ? { x: -125, y: 170, width: 70, height: 70 } : q.get('vp') === 'zoom' ? { x: -185, y: 150, width: 170, height: 170 } : q.get('vp') === 'fx'
+    ? { x: -330, y: -20, width: 660, height: 660 }
+    : { x: -185, y: -15, width: 370, height: 330 };
+  vp.padLeft = vp.padRight = vp.padTop = vp.padBottom = 0;
+  window.ready = false;
+  if (q.get('size') === 'big') document.body.classList.add('big');
+  window.hideFx = false;
+  window.sp = new spine.SpinePlayer("player", {
+    skeleton: skel + ".json", atlas: skel + ".atlas.txt",
+    premultipliedAlpha: q.get("pma") !== "0", backgroundColor: "#2b2f38ff", showControls: false,
+    preserveDrawingBuffer: true, viewport: vp,
+    success: function (p) { p.pause(); window.ready = true; },
+    error: function (p, msg) { document.getElementById('log').textContent = 'ERROR ' + msg; }
+  });
+  // drive rendering manually so capture works while the pane is hidden (no rAF)
+  setInterval(function () { if (document.hidden && window.sp) sp.drawFrame(false); }, 40);
+  function frame() { sp.drawFrame(false); return new Promise(function (r) { setTimeout(r, 30); }); }
+  function filterSlots(sk) {
+    if (window.hideFx) sk.slots.forEach(function (s) { if (!/_(main|armL|armR)$/.test(s.data.name)) s.setAttachment(null); });
+    if (window.only) sk.slots.forEach(function (s) { if (!new RegExp(window.only).test(s.data.name)) s.setAttachment(null); });
+  }
+  // freeze time via timeScale 0 (a paused player draws a dimmed overlay)
+  function poseAt(name, t) {
+    var st = sp.animationState, sk = sp.skeleton;
+    sp.paused = false;
+    if (!st.__patched) { var orig = st.apply.bind(st); st.apply = function (s) { var r = orig(s); filterSlots(s); return r; }; st.__patched = true; }
+    st.timeScale = 1;
+    st.clearTracks(); sk.setToSetupPose();
+    st.setAnimation(0, name, false);
+    st.update(t);
+    st.timeScale = 0;
+    st.apply(sk);
+    sk.updateWorldTransform(spine.Physics.update);
+  }
+  // shots: [[anim, time], ...]; cols per row; cell size in px
+  async function sheet(file, shots, cols, cell) {
+    var src = sp.canvas;
+    var rows = Math.ceil(shots.length / cols);
+    var c = document.createElement('canvas');
+    c.width = cols * cell; c.height = rows * cell;
+    var g = c.getContext('2d');
+    g.fillStyle = '#2b2f38'; g.fillRect(0, 0, c.width, c.height);
+    for (var i = 0; i < shots.length; i++) {
+      poseAt(shots[i][0], shots[i][1]);
+      sp.drawFrame(false);
+      var x = (i % cols) * cell, y = Math.floor(i / cols) * cell;
+      g.drawImage(src, x, y, cell, cell);
+      g.fillStyle = "#ffeb3b"; g.font = "16px sans-serif";
+      g.fillText(shots[i][0] + ' ' + shots[i][1].toFixed(2), x + 6, y + 18);
+    }
+    var r = await fetch('/save?name=' + file, { method: 'POST', body: c.toDataURL('image/png') });
+    return await r.text() + ' ' + c.width + 'x' + c.height + ' canvas ' + src.width + 'x' + src.height;
+  }
+</script>
+</body>
+</html>

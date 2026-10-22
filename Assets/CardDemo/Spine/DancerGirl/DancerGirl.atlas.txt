@@ -1,0 +1,5 @@
+DancerGirl.png
+size:1024,1536
+filter:Linear,Linear
+dancer_main
+bounds:0,0,1024,1536

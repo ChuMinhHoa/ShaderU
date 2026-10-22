@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GemFrame_Halloween_Flow
+  m_Shader: {fileID: 4800000, guid: 778b5644f53083e4baaf5294cf31755e, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: fc6f70c8145311749a62b0f343241951, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Bevel: 7
+    - _ColorMask: 15
+    - _Cover: 1
+    - _CoverFlash: 1.2
+    - _CoverLoop: 0
+    - _CoverOrigin: 90
+    - _CoverRandom: 0.12
+    - _CoverSoft: 0.04
+    - _FacetContrast: 0.5
+    - _FacetDepth: 7
+    - _FacetJitter: 0.22
+    - _FacetLine: 0.18
+    - _FacetRandom: 0.3
+    - _FacetSeed: 0
+    - _FacetSize: 17
+    - _Flow: 1
+    - _FlowScale: 90
+    - _FlowShift: 0.4
+    - _FlowSpeed: 0.6
+    - _FlowWaves: 2
+    - _Glow: 0.45
+    - _GlowWidth: 8
+    - _HueVariation: 1
+    - _InnerShadow: 0.2
+    - _InnerShadowWidth: 5
+    - _LightAngle: 135
+    - _LightSpeed: 0.7
+    - _LightSwing: 0.9
+    - _LipWidth: 0.071
+    - _Mirror: 1.2
+    - _MirrorAngle: -62
+    - _MirrorDuration: 1.8
+    - _MirrorPeriod: 4
+    - _MirrorWidth: 24
+    - _OutlineWidth: 0
+    - _Satin: 1
+    - _SatinSpeed: 0.6
+    - _SatinWaves: 4
+    - _SatinWidth: 0.45
+    - _SheenType: 2
+    - _Sparkle: 0.6
+    - _SparkleCell: 26
+    - _SparkleDensity: 0.6
+    - _SparkleSize: 16
+    - _SparkleSpeed: 2
+    - _Specular: 0.5
+    - _SpecularPower: 28
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorDeep: {r: 0.12999997, g: 0.059999965, b: 0.5, a: 1}
+    - _ColorDeepAlt: {r: 0.059999965, g: 0.09999997, b: 0.47999996, a: 1}
+    - _ColorLight: {r: 0.56, g: 0.52, b: 1, a: 1}
+    - _ColorLightAlt: {r: 0.47999996, g: 0.6399999, b: 1, a: 1}
+    - _ColorMid: {r: 0.33999997, g: 0.19999996, b: 0.88, a: 1}
+    - _ColorMidAlt: {r: 0.19999996, g: 0.29999998, b: 0.9, a: 1}
+    - _FlowColorA: {r: 0.37999994, g: 0.8, b: 1, a: 1}
+    - _FlowColorB: {r: 0.62, g: 0.29999998, b: 1, a: 1}
+    - _InnerRect: {r: 30, g: 34, b: 359, a: 451}
+    - _LipHighlight: {r: 0.38823533, g: 0.28235295, b: 0.627451, a: 1}
+    - _OuterRect: {r: 5.5, g: 12.5, b: 384.5, a: 475.5}
+    - _OutlineColor: {r: 0.3882353, g: 0.28235295, b: 0.627451, a: 1}
+    - _Radius: {r: 110, g: 88, b: 0, a: 0}
+    - _RefSize: {r: 390, g: 476, b: 0, a: 0}
+    - _SheenColor: {r: 0.34999996, g: 0.78, b: 1, a: 1}
+    - _Tilt: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
